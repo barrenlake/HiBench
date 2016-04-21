@@ -17,6 +17,8 @@
 
 package com.intel.hibench.streambench.spark.microbench
 
+import java.util.concurrent.ConcurrentHashMap
+
 import com.intel.hibench.streambench.spark.entity.ParamEntity
 import org.apache.spark.streaming.dstream.DStream
 import com.intel.hibench.streambench.spark.metrics.LatencyListener
@@ -24,12 +26,14 @@ import org.apache.spark.streaming.StreamingContext
 import com.intel.hibench.streambench.spark.util.BenchLogUtil
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
+
+import scala.collection.JavaConverters._
 import scala.collection.mutable.Map
 
 object MapPool {
   private var imap: Map[String, Long] = _
   def getMap(): Map[String, Long] = synchronized {
-    if (imap == null) imap = Map()
+    if (imap == null) imap = new ConcurrentHashMap[String, Long].asScala
     imap
   }
   def setMap(imap: Map[String, Long]) = synchronized {
